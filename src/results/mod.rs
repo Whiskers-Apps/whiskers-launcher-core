@@ -112,7 +112,7 @@ pub struct FormInputField {
     pub description: String,
     pub text: String,
     pub placeholder: String,
-    pub validation: Option<FormValidation>,
+    pub validation: Option<Vec<FormValidation>>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -395,6 +395,13 @@ impl OpenFormAction {
         self
     }
 
+    pub fn add_arg(mut self, arg: impl Into<String>) -> Self {
+        let mut new_args = self.args;
+        new_args.push(arg.into());
+        self.args = new_args;
+        self
+    }
+
     pub fn set_args(mut self, args: Vec<String>) -> Self {
         self.args = args;
         self
@@ -408,6 +415,13 @@ impl RunExtensionAction {
             command: command.into(),
             args: vec![],
         }
+    }
+
+    pub fn add_arg(mut self, arg: impl Into<String>) -> Self {
+        let mut new_args = self.args;
+        new_args.push(arg.into());
+        self.args = new_args;
+        self
     }
 
     pub fn set_args(mut self, args: Vec<String>) -> Self {
@@ -501,6 +515,13 @@ impl FormField {
         }
     }
 
+    pub fn add_arg(mut self, arg: impl Into<String>) -> Self {
+        let mut new_args = self.args;
+        new_args.push(arg.into());
+        self.args = new_args;
+        self
+    }
+
     pub fn set_args(mut self, args: Vec<String>) -> Self {
         self.args = args;
         self
@@ -529,12 +550,22 @@ impl FormInputField {
     }
 
     pub fn set_not_empty_validation(mut self) -> Self {
-        self.validation = Some(FormValidation::IsNotEmpty);
+        if self.validation.is_some() {
+            self.validation = Some(vec![FormValidation::IsNotEmpty, FormValidation::IsNumber]);
+        } else {
+            self.validation = Some(vec![FormValidation::IsNotEmpty])
+        }
+
         self
     }
 
     pub fn set_is_number_validation(mut self) -> Self {
-        self.validation = Some(FormValidation::IsNumber);
+        if self.validation.is_some() {
+            self.validation = Some(vec![FormValidation::IsNotEmpty, FormValidation::IsNumber]);
+        } else {
+            self.validation = Some(vec![FormValidation::IsNumber])
+        }
+
         self
     }
 }
@@ -625,6 +656,19 @@ impl FormFilePickerField {
 
     pub fn set_file_types(mut self, file_types: Vec<String>) -> Self {
         self.file_types = Some(file_types);
+        self
+    }
+
+    /// Sets the file types to the most common image types.
+    ///
+    /// Those types are **PNG, WEBP, JPG, JPEG**
+    pub fn set_image_file_types(mut self) -> Self {
+        self.file_types = Some(vec![
+            "png".to_string(),
+            "webp".to_string(),
+            "jpg".to_string(),
+            "jpeg".to_string(),
+        ]);
         self
     }
 

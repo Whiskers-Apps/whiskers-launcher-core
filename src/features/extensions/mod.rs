@@ -109,6 +109,13 @@ impl ExtensionRequest {
         }
     }
 
+    pub fn add_arg(mut self, arg: impl Into<String>) -> Self {
+        let mut new_args = self.args;
+        new_args.push(arg.into());
+        self.args = new_args;
+        self
+    }
+
     pub fn set_args(mut self, args: Vec<String>) -> Self {
         self.args = args;
         self
@@ -123,9 +130,27 @@ impl FormResponse {
         }
     }
 
+    pub fn add_arg(mut self, arg: impl Into<String>) -> Self {
+        let mut new_args = self.args;
+        new_args.push(arg.into());
+        self.args = new_args;
+        self
+    }
+
     pub fn set_args(mut self, args: Vec<String>) -> Self {
         self.args = args;
         self
+    }
+
+    pub fn get_result(&self, field_id: impl Into<String>) -> Option<FormResult> {
+        let field_id = field_id.into();
+
+        for result in &self.results {
+            if field_id == result.field_id {
+                return Some(result.to_owned());
+            }
+        }
+        None
     }
 }
 
@@ -138,9 +163,20 @@ impl FormResult {
         }
     }
 
+    pub fn add_arg(mut self, arg: impl Into<String>) -> Self {
+        let mut new_args = self.args;
+        new_args.push(arg.into());
+        self.args = new_args;
+        self
+    }
+
     pub fn set_args(mut self, args: Vec<String>) -> Self {
         self.args = args;
         self
+    }
+
+    pub fn as_bool(&self) -> bool {
+        return self.field_value == "true";
     }
 }
 
@@ -161,7 +197,7 @@ fn default_select_options() -> Option<Vec<ExtensionManifestSelectOption>> {
 }
 
 pub fn send_search_results(results: SearchResults) {
-    let results_json =  serde_json::to_string(&results).expect("Error serializing search results");
+    let results_json = serde_json::to_string(&results).expect("Error serializing search results");
     println!("{results_json}");
     exit(0);
 }

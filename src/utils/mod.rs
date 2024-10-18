@@ -1,12 +1,12 @@
 use std::env;
 
+use notify_rust::Notification;
 
 /// Makes the command run without a terminal window
 pub const FLAG_NO_WINDOW: u32 = 0x08000000;
 
 /// Makes the command run in a thread
 pub const FLAG_DETACHED_PROCESS: u32 = 0x00000008;
-
 
 #[derive(Debug, Clone)]
 pub struct SearchQuery {
@@ -47,9 +47,42 @@ pub fn get_search_query(search_input: impl Into<String>) -> SearchQuery {
 }
 
 pub fn on_windows() -> bool {
-    return env::consts::OS == "windows"
+    return env::consts::OS == "windows";
 }
 
 pub fn on_linux() -> bool {
     return env::consts::OS == "linux";
+}
+
+pub fn on_wayland() -> bool {
+    if let Ok(display_server) = env::var("XDG_SESSION_TYPE") {
+        return display_server.to_lowercase() == "wayland";
+    }
+
+    false
+}
+
+pub fn on_hyprland() -> bool {
+    if let Ok(environment) = env::var("XDG_CURRENT_DESKTOP") {
+        if environment.to_lowercase() == "hyprland" {
+            return true;
+        }
+    }
+
+    false
+}
+
+pub fn send_notification(title: impl Into<String>, description: impl Into<String>) {
+    let title = title.into();
+    let description = description.into();
+
+    #[cfg(target_os = "linux")]
+    {
+        Notification::new()
+            .summary(&title)
+            .body(&description)
+            .icon("whiskers-launcher")
+            .show()
+            .expect("Error sending notification");
+    }
 }

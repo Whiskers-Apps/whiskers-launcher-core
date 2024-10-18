@@ -14,36 +14,83 @@ use {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Settings {
+    /// The first key used in the open shortcut
     #[serde(default = "default_first_key")]
     pub first_key: String,
+
+    /// The second key used in the open shortcut
     #[serde(default = "default_second_key")]
     pub second_key: Option<String>,
+
+    /// The third key used in the open shortcut
     #[serde(default = "default_third_key")]
     pub third_key: String,
+
+    /// When enabled, it auto starts the app at login
     #[serde(default = "default_auto_start")]
     pub auto_start: bool,
+
+    /// When enabled, it shows the most recent opened apps when opening the launcher
     #[serde(default = "default_show_recent_apps")]
     pub show_recent_apps: bool,
+
+    /// When enabled, it shows the search icon.
     #[serde(default = "default_show_search_icon")]
     pub show_search_icon: bool,
+
+    /// When enabled, it shows the settings icon.
     #[serde(default = "default_show_settings_icon")]
     pub show_settings_icon: bool,
+
+    /// When enabled, it shows the placeholder text.
     #[serde(default = "default_show_placeholder")]
     pub show_placeholder: bool,
-    #[serde(default = "default_show_alt_hint")]
-    pub show_alt_hint: bool,
+
+    /// When enabled, the search window closes when clicked outside the box. (Only when wallpaper is set)
+    #[serde(default = "default_hide_on_blur")]
+    pub hide_on_blur: bool,
+
+    /// Applies a border radius to the search box.
+    #[serde(default = "default_border_radius")]
+    pub border_radius: usize,
+
+    /// Applies a border width to the search box.
+    #[serde(default = "default_border_width")]
+    pub border_width: usize,
+
+    /// Makes the search box
+    #[serde(default = "default_accent_border")]
+    pub accent_border: bool,
+
+    #[serde(default = "default_show_launch_hint")]
+    pub show_launch_hint: bool,
+
+    #[serde(default = "default_launch_key")]
+    pub launch_key: String,
+
     #[serde(default = "default_blacklist")]
     pub blacklist: Vec<String>,
+
     #[serde(default = "default_search_keyword")]
     pub search_keyword: String,
+
     #[serde(default = "default_search_engines")]
     pub search_engines: Vec<SearchEngine>,
+
     #[serde(default = "default_default_search_engine")]
     pub default_search_engine: usize,
+
     #[serde(default = "default_theme")]
     pub theme: Theme,
+
     #[serde(default = "default_extensions")]
     pub extensions: Vec<ExtensionSetting>,
+
+    #[serde(default = "default_wallpaper")]
+    pub wallpaper: Option<String>,
+
+    #[serde(default = "default_show_apps_as_grid")]
+    pub show_apps_as_grid: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -109,7 +156,27 @@ fn default_show_placeholder() -> bool {
     true
 }
 
-fn default_show_alt_hint() -> bool {
+fn default_border_radius() -> usize {
+    32
+}
+
+fn default_border_width() -> usize {
+    2
+}
+
+fn default_accent_border() -> bool {
+    true
+}
+
+fn default_launch_key() -> String {
+    "Alt".to_string()
+}
+
+fn default_hide_on_blur() -> bool {
+    true
+}
+
+fn default_show_launch_hint() -> bool {
     true
 }
 
@@ -205,6 +272,14 @@ fn default_extensions() -> Vec<ExtensionSetting> {
     vec![]
 }
 
+fn default_wallpaper() -> Option<String> {
+    None
+}
+
+fn default_show_apps_as_grid() -> bool {
+    false
+}
+
 pub fn get_default_settings() -> Settings {
     Settings {
         first_key: default_first_key(),
@@ -215,13 +290,20 @@ pub fn get_default_settings() -> Settings {
         show_search_icon: default_show_search_icon(),
         show_settings_icon: default_show_settings_icon(),
         show_placeholder: default_show_placeholder(),
-        show_alt_hint: default_show_alt_hint(),
+        hide_on_blur: default_hide_on_blur(),
+        border_radius: default_border_radius(),
+        border_width: default_border_width(),
+        accent_border: default_accent_border(),
+        launch_key: default_launch_key(),
+        show_launch_hint: default_show_launch_hint(),
         blacklist: default_blacklist(),
         search_keyword: default_search_keyword(),
         search_engines: default_search_engines(),
         default_search_engine: default_default_search_engine(),
         theme: default_theme(),
         extensions: default_extensions(),
+        wallpaper: default_wallpaper(),
+        show_apps_as_grid: default_show_apps_as_grid()
     }
 }
 
@@ -293,7 +375,7 @@ Exec=whiskers-launcher-companion index-apps"#;
         #[cfg(target_os = "windows")]
         {
             let mut shortcut_path = get_autostart_dir();
-            shortcut_path.push("Whiskers-Launcher.lnk");
+            shortcut_path.push("Whiskers Launcher.lnk");
 
             if settings.auto_start {
                 let mut target_path = get_app_dir();
