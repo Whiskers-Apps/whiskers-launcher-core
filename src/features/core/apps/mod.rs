@@ -1,11 +1,16 @@
 #[cfg(target_os = "linux")]
 use {
+    crate::paths::get_indexing_icons_dir,
     freedesktop_desktop_entry::{default_paths, DesktopEntry, Iter},
+    std::process::Command,
     tux_icons::icon_fetcher::IconFetcher,
 };
 
+#[cfg(target_os = "windows")]
+use crate::paths::{get_app_dir, get_app_resources_dir};
+
 use {
-    crate::paths::{get_app_dir, get_app_resources_dir, get_indexing_apps_path, get_indexing_dir},
+    crate::paths::{get_indexing_apps_path, get_indexing_dir},
     serde::{Deserialize, Serialize},
     std::fs,
 };

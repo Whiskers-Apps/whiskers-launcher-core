@@ -1,7 +1,7 @@
-use std::{
-    fs::{self, File},
-    io::Write,
-};
+use std::fs::{self};
+
+#[cfg(target_os = "windows")]
+use {std::fs::File, std::io::Write};
 
 use walkdir::WalkDir;
 
@@ -98,7 +98,7 @@ pub fn write_extension_request(request: ExtensionRequest) {
 
     #[cfg(target_os = "linux")]
     {
-        fs::write(get_extension_request_path(), &bytes);
+        fs::write(get_extension_request_path(), &bytes).expect("Error writing extension request");
     }
 
     #[cfg(target_os = "windows")]

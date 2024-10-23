@@ -1,6 +1,12 @@
+#[cfg(target_os = "windows")]
+use {
+    crate::paths::get_extension_response_path,
+    std::io::Write,
+    std::fs::File
+};
+
 use std::{
-    fs::{self, File},
-    io::Write,
+    fs::{self},
     path::PathBuf,
     process::exit,
 };
@@ -9,9 +15,7 @@ use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
 
 use crate::{
-    paths::{
-        get_extension_response_path, get_extensions_dir,
-    },
+    paths::get_extensions_dir,
     results::SearchResults,
 };
 
