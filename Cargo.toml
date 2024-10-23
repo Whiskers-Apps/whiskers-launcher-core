@@ -4,6 +4,7 @@ version = "0.3.0"
 edition = "2021"
 license = "MIT"
 description = "A create containing the essential code for Whiskers Launcher and it's extensions"
+repository = "https://github.com/Whiskers-Apps/whiskers-launcher-core"
 
 [dependencies]
 bincode = "1.3.3"
