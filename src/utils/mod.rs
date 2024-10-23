@@ -85,4 +85,13 @@ pub fn send_notification(title: impl Into<String>, description: impl Into<String
             .show()
             .expect("Error sending notification");
     }
+
+    #[cfg(target_os = "windows")]
+    {
+        Notification::new()
+            .summary(&title)
+            .body(&description)
+            .show()
+            .expect("Error sending notification");
+    }
 }

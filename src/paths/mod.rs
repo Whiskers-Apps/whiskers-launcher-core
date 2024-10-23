@@ -101,6 +101,12 @@ pub fn get_extension_request_path() -> PathBuf {
     path
 }
 
+pub fn get_search_results_path() -> PathBuf{
+    let mut path = get_api_dir();
+    path.push("search-results.bin");
+    path
+}
+
 pub fn get_form_response_path() -> PathBuf {
     let mut path = get_api_dir();
     path.push("form-response.bin");

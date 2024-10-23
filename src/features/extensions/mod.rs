@@ -1,9 +1,19 @@
-use std::{fs, path::PathBuf, process::exit};
+use std::{
+    fs::{self, File},
+    io::Write,
+    path::PathBuf,
+    process::exit,
+};
 
 use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
 
-use crate::{paths::get_extensions_dir, results::SearchResults};
+use crate::{
+    paths::{
+        get_extension_response_path, get_extensions_dir,
+    },
+    results::SearchResults,
+};
 
 use super::core::settings::get_settings;
 
@@ -196,9 +206,28 @@ fn default_select_options() -> Option<Vec<ExtensionManifestSelectOption>> {
     None
 }
 
+/// **linux** => Prints a json of the search results so the launcher can directly read the results.
+///
+/// **windows** => Writes the response in a binary file
 pub fn send_search_results(results: SearchResults) {
-    let results_json = serde_json::to_string(&results).expect("Error serializing search results");
-    println!("{results_json}");
+    #[cfg(target_os = "linux")]
+    {
+        let results_json =
+            serde_json::to_string(&results).expect("Error serializing search results");
+        println!("{results_json}");
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        let mut file = File::create(get_extension_response_path()).unwrap();
+        
+        file.write_all(&bincode::serialize(&results).unwrap())
+            .unwrap();
+
+        file.flush().unwrap();
+        file.sync_all().unwrap();
+    }
+
     exit(0);
 }
 

@@ -7,9 +7,8 @@ use std::os::unix::fs::PermissionsExt;
 
 #[cfg(target_os = "windows")]
 use {
-    crate::paths::{get_app_dir, get_app_resources_dir},
+    crate::paths::get_app_dir,
     mslnk::ShellLink,
-    std::{env, path::Path},
 };
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

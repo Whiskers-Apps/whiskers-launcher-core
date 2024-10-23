@@ -5,9 +5,9 @@ use {
 };
 
 use {
-    crate::paths::{get_app_dir, get_app_resources_dir, get_indexing_apps_path, get_indexing_dir, get_indexing_icons_dir},
+    crate::paths::{get_app_dir, get_app_resources_dir, get_indexing_apps_path, get_indexing_dir},
     serde::{Deserialize, Serialize},
-    std::{fs, process::Command},
+    std::fs,
 };
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

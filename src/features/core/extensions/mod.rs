@@ -1,8 +1,18 @@
-use std::fs;
+use std::{
+    fs::{self, File},
+    io::Write,
+};
 
 use walkdir::WalkDir;
 
-use crate::{features::extensions::{ExtensionManifest, ExtensionRequest, FormResponse}, paths::{get_extension_request_path, get_extension_response_path, get_extensions_dir, get_form_request_path, get_indexing_extensions_path}, results::OpenFormAction};
+use crate::{
+    features::extensions::{ExtensionManifest, ExtensionRequest, FormResponse},
+    paths::{
+        get_extension_request_path, get_extension_response_path, get_extensions_dir,
+        get_form_request_path, get_indexing_extensions_path,
+    },
+    results::OpenFormAction,
+};
 
 use super::settings::{get_settings, write_settings, ExtensionSetting};
 
@@ -85,7 +95,19 @@ pub fn get_extensions() -> Vec<ExtensionManifest> {
 
 pub fn write_extension_request(request: ExtensionRequest) {
     let bytes = bincode::serialize(&request).expect("Error serializing request");
-    fs::write(&get_extension_request_path(), &bytes).expect("Error writing request");
+
+    #[cfg(target_os = "linux")]
+    {
+        fs::write(get_extension_request_path(), &bytes);
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        let mut file = File::create(get_extension_request_path()).unwrap();
+        file.write_all(&bytes).unwrap();
+        file.flush().unwrap();
+        file.sync_all().unwrap();
+    }
 }
 
 pub fn get_extension_request() -> ExtensionRequest {
