@@ -1,7 +1,9 @@
 [package]
 name = "whiskers-launcher-core"
-version = "0.1.0"
+version = "0.3.0"
 edition = "2021"
+license = "MIT"
+description = "A create containing the essential code for Whiskers Launcher and it's extensions"
 
 [dependencies]
 bincode = "1.3.3"
