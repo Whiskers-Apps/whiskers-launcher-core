@@ -6,6 +6,7 @@ use {
     tux_icons::icon_fetcher::IconFetcher,
 };
 
+use crate::paths::get_recent_apps_path;
 #[cfg(target_os = "windows")]
 use crate::paths::{get_app_dir, get_app_resources_dir};
 
@@ -130,6 +131,8 @@ pub fn index_apps() {
 
         fs::write(get_indexing_apps_path(), encoded_apps_indexing)
             .expect("Error writing apps indexing");
+
+        refresh_recent_apps(&apps_indexing);
     }
 
     #[cfg(target_os = "windows")]
@@ -156,7 +159,30 @@ pub fn index_apps() {
         }
 
         fs::write(get_indexing_apps_path(), &bytes).expect("Error writing apps binary");
+
+        refresh_recent_apps(&apps);
     }
+}
+
+fn refresh_recent_apps(apps: &Vec<App>) {
+    let recent_apps: Vec<App> = match fs::read(&get_recent_apps_path()) {
+        Ok(bytes) => bincode::deserialize(&bytes).unwrap_or(Vec::new()),
+        Err(_) => Vec::new(),
+    };
+
+    let mut refreshed_recent_apps = Vec::<App>::new();
+
+    for recent_app in recent_apps {
+        if apps.iter().any(|a| a.id == recent_app.id) {
+            refreshed_recent_apps.push(recent_app);
+        }
+    }
+
+    fs::write(
+        get_recent_apps_path(),
+        bincode::serialize(&refreshed_recent_apps).expect("Error serializing recent apps"),
+    )
+    .expect("Error writing recent apps");
 }
 
 pub fn get_apps() -> Vec<App> {
