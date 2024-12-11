@@ -90,6 +90,9 @@ pub struct Settings {
 
     #[serde(default = "default_show_apps_as_grid")]
     pub show_apps_as_grid: bool,
+
+    #[serde(default = "default_hide_app_icons")]
+    pub hide_app_icons: bool
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -279,6 +282,10 @@ fn default_show_apps_as_grid() -> bool {
     false
 }
 
+fn default_hide_app_icons() -> bool{
+    false
+}
+
 pub fn get_default_settings() -> Settings {
     Settings {
         first_key: default_first_key(),
@@ -302,7 +309,8 @@ pub fn get_default_settings() -> Settings {
         theme: default_theme(),
         extensions: default_extensions(),
         wallpaper: default_wallpaper(),
-        show_apps_as_grid: default_show_apps_as_grid()
+        show_apps_as_grid: default_show_apps_as_grid(),
+        hide_app_icons: default_hide_app_icons()
     }
 }
 
